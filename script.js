@@ -234,3 +234,56 @@ function updateStats(){
 displayEntries();
 
 updateStats();
+
+function exportData(){
+
+    if(sleepEntries.length === 0){
+        alert("No sleep data available to export.");
+        return;
+    }
+
+
+    let data = JSON.stringify(sleepEntries, null, 2);
+
+
+    let file = new Blob([data], {
+        type: "application/json"
+    });
+
+
+    let link = document.createElement("a");
+
+    link.href = URL.createObjectURL(file);
+
+    link.download = "sleep_data.json";
+
+    link.click();
+
+}
+
+
+
+function resetData(){
+
+    let confirmReset = confirm(
+        "Are you sure you want to delete all sleep data?"
+    );
+
+
+    if(confirmReset){
+
+        localStorage.removeItem("sleepEntries");
+
+        sleepEntries = [];
+
+        displayEntries();
+
+        updateStats();
+
+
+        document.getElementById("hoursSlept").innerHTML =
+            "Hours Slept:";
+
+    }
+
+}
