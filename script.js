@@ -6,6 +6,7 @@ let participantID = localStorage.getItem("participantID") || "";
 
 function calculateSleep(){
 
+    // Save participant ID
     let participant = document.getElementById("participantID").value;
 
     localStorage.setItem("participantID", participant);
@@ -13,6 +14,7 @@ function calculateSleep(){
     participantID = participant;
 
 
+    // Get inputs
     let bedtime = document.getElementById("bedtime").value;
     let waketime = document.getElementById("waketime").value;
     let quality = document.getElementById("quality").value;
@@ -20,49 +22,60 @@ function calculateSleep(){
     let outsideTime = document.getElementById("outsideTime").value;
 
 
-    if (bedtime === "" || waketime === ""){
+    if(bedtime === "" || waketime === ""){
         alert("Please enter bedtime and wake time.");
         return;
     }
 
 
+    // Split time
     let bed = bedtime.split(":");
     let wake = waketime.split(":");
 
 
+    // Convert to minutes
     let bedMinutes = Number(bed[0]) * 60 + Number(bed[1]);
     let wakeMinutes = Number(wake[0]) * 60 + Number(wake[1]);
 
 
-    if (wakeMinutes < bedMinutes){
+    // Handle midnight
+    if(wakeMinutes < bedMinutes){
         wakeMinutes += 24 * 60;
     }
 
 
+    // Calculate hours
     let totalMinutes = wakeMinutes - bedMinutes;
 
     let hours = (totalMinutes / 60).toFixed(1);
 
 
+
+    // Show result
     document.getElementById("hoursSlept").innerHTML =
         "Hours Slept: " + hours;
 
 
 
+    // Create entry
     let entry = {
 
         participant: participantID,
         date: entryDate,
         hours: Number(hours),
         quality: Number(quality),
-        outsideTime: outsideTime
+        outsideTime: Number(outsideTime)
 
     };
 
 
+
+    // Add entry
     sleepEntries.push(entry);
 
 
+
+    // Save entries
     localStorage.setItem(
         "sleepEntries",
         JSON.stringify(sleepEntries)
@@ -71,7 +84,7 @@ function calculateSleep(){
 
     displayEntries();
 
-    updateStats();
+    updateReport();
 
 }
 
@@ -91,20 +104,18 @@ function displayEntries(){
         "Date: " + sleepEntries[i].date +
         "<br>Hours Slept: " + sleepEntries[i].hours +
         "<br>Sleep Quality: " + sleepEntries[i].quality +
-        "<br>Outside Time: " + sleepEntries[i].outsideTime +
+        "<br>Outside Time: " + sleepEntries[i].outsideTime + " minutes" +
         "</p>";
 
     }
 
 
-    let sleepLog = document.getElementById("sleepLog");
-
-
-    if(sleepLog){
-
-        sleepLog.innerHTML = log;
-
+    if(log === ""){
+        log = "No entries yet.";
     }
+
+
+    document.getElementById("sleepLog").innerHTML = log;
 
 }
 
@@ -112,7 +123,7 @@ function displayEntries(){
 
 
 
-function updateStats(){
+function updateReport(){
 
     if(sleepEntries.length === 0){
         return;
@@ -120,14 +131,13 @@ function updateStats(){
 
 
 
-    let totalHours = 0;
-
+    let totalSleep = 0;
     let totalQuality = 0;
 
 
     for(let i = 0; i < sleepEntries.length; i++){
 
-        totalHours += Number(sleepEntries[i].hours);
+        totalSleep += Number(sleepEntries[i].hours);
 
         totalQuality += Number(sleepEntries[i].quality);
 
@@ -136,7 +146,7 @@ function updateStats(){
 
 
     let averageSleep =
-    (totalHours / sleepEntries.length).toFixed(1);
+    (totalSleep / sleepEntries.length).toFixed(1);
 
 
 
@@ -160,55 +170,30 @@ function updateStats(){
 
 
 
-    let averageSleepBox =
-    document.getElementById("averageSleep");
-
-
-    if(averageSleepBox){
-
-        averageSleepBox.innerHTML =
+    document.getElementById("reportAverageSleep").innerHTML =
         "Average Sleep: " + averageSleep + " hours";
 
-    }
+
+    document.getElementById("reportAverageQuality").innerHTML =
+        "Average Sleep Quality: " + averageQuality + "/10";
 
 
-
-    let averageQualityBox =
-    document.getElementById("averageQuality");
-
-
-    if(averageQualityBox){
-
-        averageQualityBox.innerHTML =
-        "Average Sleep Quality: " + averageQuality;
-
-    }
+    document.getElementById("reportBestNight").innerHTML =
+        "Best Sleep Night: " + bestNight.date +
+        " (" + bestNight.hours + " hours)";
 
 
-
-    let bestNightBox =
-    document.getElementById("bestNight");
-
-
-    if(bestNightBox){
-
-        bestNightBox.innerHTML =
-        "Best Sleep Night: " + bestNight.date;
-
-    }
-
-
-
-    let totalNightsBox =
-    document.getElementById("totalNights");
-
-
-    if(totalNightsBox){
-
-        totalNightsBox.innerHTML =
+    document.getElementById("reportTotalNights").innerHTML =
         "Total Nights Logged: " + sleepEntries.length;
 
-    }
+
+    // Also update the extra statistics at bottom
+    document.getElementById("averageSleep").innerHTML =
+        "Average Sleep: " + averageSleep + " hours";
+
+
+    document.getElementById("averageQuality").innerHTML =
+        "Average Quality: " + averageQuality;
 
 }
 
@@ -216,40 +201,40 @@ function updateStats(){
 
 
 
-function exportData(){
+function exportReport(){
 
     if(sleepEntries.length === 0){
 
-        alert("No sleep data to export.");
+        alert("No sleep data available to export.");
 
         return;
 
     }
 
 
-    let data = JSON.stringify(
+
+    let report = JSON.stringify(
         sleepEntries,
         null,
         2
     );
 
 
-    let blob = new Blob(
-        [data],
+
+    let file = new Blob(
+        [report],
         {
             type: "application/json"
         }
     );
 
 
+
     let link = document.createElement("a");
 
+    link.href = URL.createObjectURL(file);
 
-    link.href = URL.createObjectURL(blob);
-
-
-    link.download = "sleep_data.json";
-
+    link.download = "Sleep_Tracker_Report.json";
 
     link.click();
 
@@ -261,12 +246,12 @@ function exportData(){
 
 function resetData(){
 
-    let answer = confirm(
+    let confirmReset = confirm(
         "Are you sure you want to delete all sleep data?"
     );
 
 
-    if(answer){
+    if(confirmReset){
 
         sleepEntries = [];
 
@@ -276,15 +261,14 @@ function resetData(){
 
         displayEntries();
 
-
-        updateStats();
+        updateReport();
 
 
         document.getElementById("hoursSlept").innerHTML =
         "Hours Slept:";
 
 
-        alert("All sleep data has been deleted.");
+        alert("Sleep data has been reset.");
 
     }
 
@@ -294,8 +278,7 @@ function resetData(){
 
 
 
-// Load saved information when website opens
-
+// Load saved information when opening website
 displayEntries();
 
-updateStats();
+updateReport();
