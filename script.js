@@ -164,23 +164,21 @@ function updateReport(){
 
     }
 
+document.getElementById("averageSleep").textContent =
+    "Average Sleep: " + averageSleep + " hours";
 
 
-    document.getElementById("reportAverageSleep").textContent =
-        "Average Sleep: " + averageSleep + " hours";
+document.getElementById("averageQuality").textContent =
+    "Average Sleep Quality: " + averageQuality + "/10";
 
 
-    document.getElementById("reportAverageQuality").textContent =
-        "Average Sleep Quality: " + averageQuality + "/10";
+document.getElementById("bestNight").textContent =
+    "Best Sleep Night: " + bestNight.date +
+    " (" + bestNight.hours + " hours)";
 
 
-    document.getElementById("reportBestNight").textContent =
-        "Best Sleep Night: " + bestNight.date +
-        " (" + bestNight.hours + " hours)";
-
-
-    document.getElementById("reportTotalNights").textContent =
-        "Total Nights Logged: " + sleepEntries.length;
+document.getElementById("totalNights").textContent =
+    "Total Nights Logged: " + sleepEntries.length;
 
 
     document.getElementById("averageSleep").textContent =
