@@ -130,7 +130,6 @@ function updateReport(){
     }
 
 
-
     let totalSleep = 0;
     let totalQuality = 0;
 
@@ -138,16 +137,13 @@ function updateReport(){
     for(let i = 0; i < sleepEntries.length; i++){
 
         totalSleep += Number(sleepEntries[i].hours);
-
         totalQuality += Number(sleepEntries[i].quality);
 
     }
 
 
-
     let averageSleep =
     (totalSleep / sleepEntries.length).toFixed(1);
-
 
 
     let averageQuality =
@@ -170,34 +166,31 @@ function updateReport(){
 
 
 
-    document.getElementById("reportAverageSleep").innerHTML =
+    document.getElementById("reportAverageSleep").textContent =
         "Average Sleep: " + averageSleep + " hours";
 
 
-    document.getElementById("reportAverageQuality").innerHTML =
+    document.getElementById("reportAverageQuality").textContent =
         "Average Sleep Quality: " + averageQuality + "/10";
 
 
-    document.getElementById("reportBestNight").innerHTML =
+    document.getElementById("reportBestNight").textContent =
         "Best Sleep Night: " + bestNight.date +
         " (" + bestNight.hours + " hours)";
 
 
-    document.getElementById("reportTotalNights").innerHTML =
+    document.getElementById("reportTotalNights").textContent =
         "Total Nights Logged: " + sleepEntries.length;
 
 
-    // Also update the extra statistics at bottom
-    document.getElementById("averageSleep").innerHTML =
+    document.getElementById("averageSleep").textContent =
         "Average Sleep: " + averageSleep + " hours";
 
 
-    document.getElementById("averageQuality").innerHTML =
+    document.getElementById("averageQuality").textContent =
         "Average Quality: " + averageQuality;
 
 }
-
-
 
 
 
